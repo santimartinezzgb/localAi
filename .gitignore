@@ -1,0 +1,37 @@
+# Rust & Tauri build artifacts
+/src-tauri/target/
+/target/
+**/*.rs.bk
+
+# Node / Frontend dependencies
+/node_modules/
+/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local runtime configuration & secrets (Never commit private IPs or tokens)
+.env
+.env.*
+config.json
+*.local.json
+*.secret.json
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Compiled desktop bundles & installers
+*.AppImage
+*.deb
+*.rpm
+*.msi
+*.exe
+*.dmg
+*.app
+

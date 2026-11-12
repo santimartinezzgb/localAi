@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="opencode">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>localAi</title>
+  <style>
+    /* =============================================================
+       1. VARIABLES POR TEMA (4 INTERFACES COMPLETAMENTE DISTINTAS)
+       ============================================================= */
+
+    /* TEMA A: MINIMALISTA ESTILO OPENCODE (Modern Flat / Cursor / VS Code) */
+    [data-theme="opencode"] {
+      --bg-window: #09090b;
+      --bg-header: #09090b;
+      --bg-chat: #09090b;
+      --bg-composer: #09090b;
+      --bg-card: #18181b;
+      --bg-card-hover: #27272a;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-focus: #3b82f6;
+
+      --text-main: #f4f4f5;
+      --text-muted: #a1a1aa;
+      --text-subtle: #71717a;
+
+      --user-bg: #27272a;
+      --user-border: #3f3f46;
+      --user-text: #ffffff;
+      --user-radius: 12px;
+
+      --ai-bg: #121215;
+      --ai-border: rgba(255, 255, 255, 0.06);
+      --ai-text: #e4e4e7;
+      --ai-radius: 12px;
+
+      --primary: #ffffff;
+      --primary-text: #09090b;
+      --primary-hover: #e4e4e7;
+      --accent: #38bdf8;
+      --status-color: #10b981;
+
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
+      --font-mono: "JetBrains Mono", Menlo, Consolas, monospace;
+      --window-border: none;
+      --window-shadow: none;
+      --window-padding: 0;
+    }
+
+    /* TEMA B: TIPO CLAUDE (Anthropic Warm Minimal / Terracotta) */
+    [data-theme="claude"] {
+      --bg-window: #1e1b18;
+      --bg-header: #1e1b18;
+      --bg-chat: #1a1715;
+      --bg-composer: #1e1b18;
+      --bg-card: #282420;
+      --bg-card-hover: #332d28;
+      --border-color: rgba(217, 119, 87, 0.15);
+      --border-focus: #d97757;
+
+      --text-main: #fbf9f7;
+      --text-muted: #c9bfb5;
+      --text-subtle: #8a7e72;
+
+      --user-bg: #322b25;
+      --user-border: rgba(217, 119, 87, 0.35);
+      --user-text: #ffffff;
+      --user-radius: 18px;
+
+      --ai-bg: #25201c;
+      --ai-border: rgba(255, 255, 255, 0.05);
+      --ai-text: #ede4dc;
+      --ai-radius: 18px;
+
+      --primary: #d97757;
+      --primary-text: #ffffff;
+      --primary-hover: #c46343;
+      --accent: #e5987e;
+      --status-color: #d97757;
+
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Georgia, serif;
+      --font-mono: "JetBrains Mono", Menlo, Consolas, monospace;
+      --window-border: none;
+      --window-shadow: none;
+      --window-padding: 0;
+    }
+
+    /* TEMA C: TIPO TERMINAL ESTILO HACKING (Cyberpunk Matrix / Kali HUD) */
+    [data-theme="terminal"] {
+      --bg-window: #040804;
+      --bg-header: #020502;
+      --bg-chat: #040804;
+      --bg-composer: #020502;
+      --bg-card: #081208;
+      --bg-card-hover: #0d1e0d;
+      --border-color: rgba(0, 255, 102, 0.25);
+      --border-focus: #00ff66;
+
+      --text-main: #00ff66;
+      --text-muted: #4ade80;
+      --text-subtle: #166534;
+
+      --user-bg: #071507;
+      --user-border: rgba(0, 255, 102, 0.45);
+      --user-text: #bbf7d0;
+      --user-radius: 0px;
+
+      --ai-bg: #030a03;
+      --ai-border: #00ff66;
+      --ai-text: #00ff66;
+      --ai-radius: 0px;
+
+      --primary: #00ff66;
+      --primary-text: #000000;
+      --primary-hover: #33ff88;
+      --accent: #22c55e;
+      --status-color: #00ff66;
+
+      --font-family: "JetBrains Mono", "Courier New", monospace;
+      --font-mono: "JetBrains Mono", "Courier New", monospace;
+      --window-border: 1px solid #00ff66;
+      --window-shadow: 0 0 25px rgba(0, 255, 102, 0.2);
+      --window-padding: 0;
+    }
+
+    /* TEMA D: RETRO 90 (Windows 95 Classic Desktop) */
+    [data-theme="retro90"] {
+      --bg-window: #008080;
+      --bg-header: linear-gradient(90deg, #000080, #1084d0);
+      --bg-chat: #ffffff;
+      --bg-composer: #c0c0c0;
+      --bg-card: #ffffff;
+      --bg-card-hover: #dfdfdf;
+      --border-color: #808080;
+      --border-focus: #000080;
+
+      --text-main: #000000;
+      --text-muted: #404040;
+      --text-subtle: #808080;
+
+      --user-bg: #e6f0ff;
+      --user-border: #000080;
+      --user-text: #000080;
+      --user-radius: 0px;
+
+      --ai-bg: #f4f4f4;
+      --ai-border: #808080;
+      --ai-text: #000000;
+      --ai-radius: 0px;
+
+      --primary: #c0c0c0;
+      --primary-text: #000000;
+      --primary-hover: #dfdfdf;
+      --accent: #000080;
+      --status-color: #008000;
+
+      --font-family: "MS Sans Serif", Tahoma, "Segoe UI", sans-serif;
+      --font-mono: "Courier New", Courier, monospace;
+      --window-border: 2px solid #ffffff;
+      --window-shadow: inset -2px -2px 0 #000000, inset 2px 2px 0 #ffffff;
+      --window-padding: 6px;
+    }
+
+    /* =============================================================
+       2. ESTRUCTURA BASE Y RESETS
+       ============================================================= */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-window);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      font-size: 14px;
+      line-height: 1.5;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: var(--window-padding);
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .app-frame {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: var(--bg-window);
+      border: var(--window-border);
+      box-shadow: var(--window-shadow);
+      overflow: hidden;
+    }
+
+    /* Efectos Retro 90 en el marco */
+    [data-theme="retro90"] .app-frame {
+      background: #c0c0c0;
+      border-top: 2px solid #ffffff;
+      border-left: 2px solid #ffffff;
+      border-right: 2px solid #000000;
+      border-bottom: 2px solid #000000;
+      box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
+    }
+
+    /* Scanlines y Glow para tema Terminal */
+    [data-theme="terminal"] .chat-container {
+      background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%);
+      background-size: 100% 4px;
+    }
+
+    [data-theme="terminal"] .message-card,
+    [data-theme="terminal"] .brand-title,
+    [data-theme="terminal"] .btn-primary {
+      text-shadow: 0 0 5px rgba(0, 255, 102, 0.4);
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 999px;
+    }
+    [data-theme="retro90"] ::-webkit-scrollbar {
+      width: 14px;
+    }
+    [data-theme="retro90"] ::-webkit-scrollbar-thumb {
+      background: #c0c0c0;
+      border: 2px solid #ffffff;
+      border-right-color: #000000;
+      border-bottom-color: #000000;
+      border-radius: 0;
+    }
+
+    /* =============================================================
+       3. HEADER DE LA APLICACIÓN
+       ============================================================= */
+    .app-header {
+      background: var(--bg-header);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      z-index: 10;
+      border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
+    }
+
+    [data-theme="retro90"] .app-header {
+      padding: 4px 6px;
+      color: #ffffff;
+      border-bottom: none;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-icon svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--primary-text);
+    }
+
+    [data-theme="retro90"] .brand-icon {
+      width: 20px;
+      height: 20px;
+      background: transparent;
+      border-radius: 0;
+    }
+    [data-theme="retro90"] .brand-icon svg {
+      fill: #ffffff;
+    }
+
+    .brand-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: -0.2px;
+    }
+
+    .brand-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 5px;
+      background: var(--bg-card);
+      color: var(--accent);
+      border: 1px solid var(--border-color);
+    }
+
+    [data-theme="retro90"] .brand-tag {
+      background: transparent;
+      border: none;
+      color: #c0c0c0;
+    }
+
+    /* Acciones del Header */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 4px 8px;
+      gap: 6px;
+    }
+
+    [data-theme="retro90"] .input-group {
+      background: #ffffff;
+      border-top: 2px solid #808080;
+      border-left: 2px solid #808080;
+      border-right: 2px solid #ffffff;
+      border-bottom: 2px solid #ffffff;
+      border-radius: 0;
+      padding: 2px 4px;
+    }
+
+    .input-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+
+    .modern-input, .modern-select {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-main);
+      font-family: var(--font-family);
+      font-size: 12.5px;
+    }
+
+    .modern-input {
+      width: 175px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+    }
+
+    .modern-select {
+      cursor: pointer;
+    }
+
+    .modern-select option {
+      background: var(--bg-card);
+      color: var(--text-main);
+    }
+
+    .btn-header {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      font-family: var(--font-family);
+    }
+
+    .btn-header:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-focus);
+    }
+
+    [data-theme="retro90"] .btn-header {
+      background: #c0c0c0;
+      border-top: 2px solid #ffffff;
+      border-left: 2px solid #ffffff;
+      border-right: 2px solid #000000;
+      border-bottom: 2px solid #000000;
+      border-radius: 0;
+      color: #000000;
+      font-weight: bold;
+    }
+
+    [data-theme="retro90"] .btn-header:active {
+      border-top: 2px solid #000000;
+      border-left: 2px solid #000000;
+      border-right: 2px solid #ffffff;
+      border-bottom: 2px solid #ffffff;
+      transform: translate(1px, 1px);
+    }
+
+    /* =============================================================
+       4. ÁREA DEL CHAT & BOCADILLOS
+       ============================================================= */
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: var(--bg-chat);
+    }
+
+    [data-theme="retro90"] .chat-container {
+      margin: 4px;
+      border-top: 2px solid #808080;
+      border-left: 2px solid #808080;
+      border-right: 2px solid #ffffff;
+      border-bottom: 2px solid #ffffff;
+      background: #ffffff;
+      padding: 14px;
+    }
+
+    .message-row {
+      display: flex;
+      flex-direction: column;
+      max-width: 86%;
+      animation: fadeIn 0.15s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message-row.user-row {
+      align-self: flex-end;
+    }
+
+    .message-row.ai-row {
+      align-self: flex-start;
+    }
+
+    .user-header {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      margin-bottom: 4px;
+      font-size: 11px;
+    }
+
+    .user-tag {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: var(--bg-card);
+      color: var(--accent);
+      border: 1px solid var(--border-color);
+    }
+
+    [data-theme="terminal"] .user-tag {
+      border-radius: 0;
+      border-color: #00ff66;
+    }
+
+    .message-time {
+      font-size: 11px;
+      color: var(--text-subtle);
+    }
+
+    /* BOCADILLOS */
+    .message-card {
+      padding: 12px 16px;
+      font-size: 14.5px;
+      line-height: 1.6;
+      word-break: break-word;
+      user-select: text;
+    }
+
+    .user-row .message-card {
+      background: var(--user-bg);
+      border: 1px solid var(--user-border);
+      color: var(--user-text);
+      border-radius: var(--user-radius);
+      border-bottom-right-radius: 3px;
+    }
+
+    /* Bocadillo limpio para la IA (sin emoji, sin modelo, solo bocadillo) */
+    .ai-row .message-card {
+      background: var(--ai-bg);
+      border: 1px solid var(--ai-border);
+      color: var(--ai-text);
+      border-radius: var(--ai-radius);
+      border-top-left-radius: 3px;
+    }
+
+    [data-theme="terminal"] .ai-row .message-card {
+      border-left: 3px solid #00ff66;
+      border-radius: 0;
+      background: #020702;
+    }
+
+    [data-theme="retro90"] .message-card {
+      border-radius: 0;
+      box-shadow: inset 1px 1px 0 #dfdfdf;
+    }
+    [data-theme="retro90"] .ai-row .message-card {
+      border: 1px solid #808080;
+      background: #f4f4f4;
+      color: #000000;
+    }
+    [data-theme="retro90"] .user-row .message-card {
+      border: 1px solid #000080;
+      background: #eef5ff;
+      color: #000080;
+    }
+
+    .message-text {
+      white-space: pre-wrap;
+    }
+
+    .inline-code {
+      background: rgba(0, 0, 0, 0.3);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 2px 5px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    .code-block {
+      margin: 10px 0;
+      background: #000000;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .code-header {
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid var(--border-color);
+      padding: 4px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-subtle);
+      text-transform: uppercase;
+    }
+
+    .code-copy-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: var(--font-family);
+    }
+    .code-copy-btn:hover {
+      color: var(--text-main);
+    }
+
+    .code-block pre {
+      padding: 10px 12px;
+      margin: 0;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: #e4e4e7;
+    }
+
+    /* Typing dots */
+    .typing-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 4px;
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      animation: typingPulse 1.4s infinite ease-in-out;
+    }
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingPulse {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(0.85); }
+      40% { opacity: 1; transform: scale(1.15); }
+    }
+
+    /* Error card */
+    .error-card {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      color: #fda4af;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    /* =============================================================
+       5. COMPOSITOR INFERIOR
+       ============================================================= */
+    .composer-container {
+      background: var(--bg-composer);
+      border-top: 1px solid var(--border-color);
+      padding: 12px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    [data-theme="retro90"] .composer-container {
+      background: #c0c0c0;
+      border-top: none;
+      padding: 6px 8px;
+    }
+
+    .composer-box {
+      display: flex;
+      align-items: flex-end;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 8px 12px;
+      gap: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    [data-theme="claude"] .composer-box {
+      border-radius: 22px;
+      padding: 8px 16px;
+    }
+
+    [data-theme="terminal"] .composer-box {
+      border-radius: 0;
+      border-color: #00ff66;
+      box-shadow: none;
+    }
+
+    [data-theme="retro90"] .composer-box {
+      border-radius: 0;
+      background: #ffffff;
+      border-top: 2px solid #808080;
+      border-left: 2px solid #808080;
+      border-right: 2px solid #ffffff;
+      border-bottom: 2px solid #ffffff;
+      box-shadow: none;
+      padding: 4px 6px;
+    }
+
+    #prompt-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.5;
+      resize: none;
+      min-height: 24px;
+      max-height: 130px;
+      padding: 4px 0;
+    }
+
+    #prompt-input::placeholder {
+      color: var(--text-subtle);
+    }
+
+    .btn-send {
+      background: var(--primary);
+      color: var(--primary-text);
+      border: none;
+      border-radius: 8px;
+      padding: 7px 15px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+      font-family: var(--font-family);
+    }
+
+    .btn-send:hover {
+      background: var(--primary-hover);
+    }
+
+    [data-theme="claude"] .btn-send {
+      border-radius: 999px;
+      padding: 8px 14px;
+    }
+
+    [data-theme="terminal"] .btn-send {
+      border-radius: 0;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    [data-theme="retro90"] .btn-send {
+      background: #c0c0c0;
+      color: #000000;
+      border-top: 2px solid #ffffff;
+      border-left: 2px solid #ffffff;
+      border-right: 2px solid #000000;
+      border-bottom: 2px solid #000000;
+      border-radius: 0;
+      font-weight: bold;
+      padding: 6px 12px;
+    }
+    [data-theme="retro90"] .btn-send:active {
+      border-top: 2px solid #000000;
+      border-left: 2px solid #000000;
+      border-right: 2px solid #ffffff;
+      border-bottom: 2px solid #ffffff;
+      transform: translate(1px, 1px);
+    }
+
+    .composer-hints {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-subtle);
+      padding: 0 4px;
+    }
+
+    .dot-status {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--status-color);
+      display: inline-block;
+    }
+
+    /* =============================================================
+       6. MODAL DE AJUSTES & SELECTOR DE LAS 4 INTERFACES
+       ============================================================= */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-window {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      width: 90%;
+      max-width: 540px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      color: var(--text-main);
+      font-family: var(--font-family);
+    }
+
+    [data-theme="retro90"] .modal-window {
+      background: #c0c0c0;
+      border-top: 2px solid #ffffff;
+      border-left: 2px solid #ffffff;
+      border-right: 2px solid #000000;
+      border-bottom: 2px solid #000000;
+      border-radius: 0;
+      color: #000000;
+    }
+
+    [data-theme="terminal"] .modal-window {
+      border-radius: 0;
+      border: 2px solid #00ff66;
+      box-shadow: 0 0 30px rgba(0, 255, 102, 0.3);
+    }
+
+    .modal-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    [data-theme="retro90"] .modal-header {
+      background: linear-gradient(90deg, #000080, #1084d0);
+      color: #ffffff;
+      padding: 4px 8px;
+      border-bottom: none;
+    }
+
+    .modal-title {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .btn-close {
+      background: transparent;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 4px;
+      border-radius: 4px;
+    }
+
+    .modal-body {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-subtle);
+      margin-bottom: 10px;
+    }
+
+    /* Grid de las 4 interfaces */
+    .themes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .theme-card {
+      background: var(--bg-window);
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .theme-card:hover {
+      border-color: var(--border-focus);
+    }
+
+    .theme-card.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--border-focus);
+    }
+
+    [data-theme="retro90"] .theme-card {
+      background: #ffffff;
+      border: 2px solid #808080;
+      border-radius: 0;
+      color: #000000;
+    }
+
+    [data-theme="terminal"] .theme-card {
+      border-radius: 0;
+    }
+
+    .theme-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .theme-card-title {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .theme-card-preview {
+      display: flex;
+      gap: 4px;
+    }
+
+    .preview-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .theme-card-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .modal-footer {
+      padding: 12px 18px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    [data-theme="retro90"] .modal-footer {
+      background: #c0c0c0;
+      border-top: none;
+    }
+
+    /* =============================================================
+       7. INTERRUPTOR RETRO MODO SEGURO Y CONSOLA CRT DE AGENTE
+       ============================================================= */
+    .safe-mode-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .retro-checkbox {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border: 1px solid var(--border-focus);
+      background: var(--bg-window);
+      border-radius: 3px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .retro-checkbox:checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .retro-checkbox:checked::after {
+      content: "✓";
+      font-size: 10px;
+      font-weight: 900;
+      color: #000000;
+      line-height: 1;
+    }
+
+    [data-theme="retro90"] .retro-checkbox {
+      border-radius: 0;
+      background: #ffffff;
+      border-top: 2px solid #808080;
+      border-left: 2px solid #808080;
+      border-right: 2px solid #dfdfdf;
+      border-bottom: 2px solid #dfdfdf;
+    }
+
+    [data-theme="retro90"] .retro-checkbox:checked {
+      background: #ffffff;
+    }
+
+    [data-theme="retro90"] .retro-checkbox:checked::after {
+      color: #000080;
+      font-size: 11px;
+    }
+
+    /* Monitor CRT de pasos del Agente ReAct */
+    .crt-agent-log {
+      background: #050807;
+      border: 1px solid rgba(34, 211, 238, 0.35);
+      border-left: 3px solid #fbbf24;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 10px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.5;
+      color: #e2e8f0;
+      box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.85);
+      background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
+      background-size: 100% 4px;
+    }
+
+    [data-theme="retro90"] .crt-agent-log {
+      border-radius: 0;
+      border-top: 2px solid #000000;
+      border-left: 2px solid #000000;
+      border-right: 2px solid #ffffff;
+      border-bottom: 2px solid #ffffff;
+    }
+
+    .crt-log-header {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #94a3b8;
+      border-bottom: 1px dashed rgba(148, 163, 184, 0.25);
+      padding-bottom: 4px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .crt-step-item {
+      display: flex;
+      flex-direction: column;
+      padding: 2px 0;
+      word-break: break-all;
+    }
+
+    .crt-step-main {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .crt-tag-amber {
+      color: #fbbf24;
+      font-weight: 700;
+      text-shadow: 0 0 6px rgba(251, 191, 36, 0.45);
+      flex-shrink: 0;
+    }
+
+    .crt-tag-cyan {
+      color: #22d3ee;
+      font-weight: 700;
+      text-shadow: 0 0 6px rgba(34, 211, 238, 0.45);
+      flex-shrink: 0;
+    }
+
+    .crt-tag-denied {
+      color: #f43f5e;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .crt-cmd-text {
+      color: #fde68a;
+    }
+
+    .crt-cmd-cyan {
+      color: #a5f3fc;
+    }
+
+    .crt-step-preview {
+      font-size: 11px;
+      color: #94a3b8;
+      padding-left: 14px;
+      opacity: 0.85;
+    }
+
+    .confirm-details-box {
+      background: #090d10;
+      color: #fbbf24;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .btn-danger {
+      background: #e11d48;
+      color: #ffffff;
+    }
+    .btn-danger:hover {
+      background: #be123c;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-frame">
+    <!-- Header Principal -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+          </svg>
+        </div>
+        <div class="brand-title">
+          <span>localAi</span>
+          <span class="brand-tag">ReAct Agent</span>
+        </div>
+      </div>
+
+      <!-- Controles de Conexión & Ajustes -->
+      <div class="header-actions">
+        <div class="input-group">
+          <span class="input-label">Host</span>
+          <input
+            type="text"
+            id="host-url"
+            class="modern-input"
+            value="http://localhost:11434"
+            placeholder="http://localhost:11434"
+            title="URL de tu servidor Ollama local o remoto (se guarda automáticamente)"
+          />
+        </div>
+
+        <div class="input-group">
+          <span class="input-label">Modelo</span>
+          <select id="model-select" class="modern-select">
+            <option value="qwen2.5-coder:7b">qwen2.5-coder:7b</option>
+            <option value="qwen2.5-coder:1.5b">qwen2.5-coder:1.5b</option>
+          </select>
+        </div>
+
+        <!-- Interruptor Retro: MODO SEGURO (Confirmar comandos) activo por defecto -->
+        <div class="input-group" title="Solicita confirmación antes de ejecutar comandos de terminal o modificar archivos">
+          <label class="safe-mode-label" for="safe-mode-toggle">
+            <input type="checkbox" id="safe-mode-toggle" class="retro-checkbox" checked />
+            <span>MODO SEGURO (Confirmar comandos)</span>
+          </label>
+        </div>
+
+        <!-- Botón de Configuración -->
+        <button class="btn-header" onclick="openSettings()" title="Personalizar Interfaz">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span>Ajustes</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Feed de Mensajes -->
+    <main class="chat-container" id="chat-messages"></main>
+
+    <!-- Compositor Inferior -->
+    <footer class="composer-container">
+      <div class="composer-box">
+        <textarea 
+          id="prompt-input" 
+          rows="1" 
+          placeholder="Pide al agente inspeccionar archivos, buscar en la web o ejecutar comandos..."
+        ></textarea>
+        <button id="send-btn" class="btn-send" onclick="sendMessage()">
+          <span>Enviar</span>
+        </button>
+      </div>
+      <div class="composer-hints">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="dot-status" id="status-dot"></span>
+          <span id="status-text">Listo para enviar</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span>Agente ReAct (Máx 10 pasos) • Enter para enviar</span>
+          <span id="tps-counter" style="font-family:var(--font-mono); font-weight:bold;">0.0 t/s</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Modal Retro de Confirmación de Seguridad (Modo Seguro) -->
+  <div class="modal-overlay" id="confirm-modal">
+    <div class="modal-window" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span>⚠️ Confirmación de Seguridad (Modo Seguro)</span>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px; color:var(--text-muted);">
+          El agente autónomo solicita permiso para ejecutar la siguiente acción local:
+        </p>
+        <div style="font-weight:700; font-family:var(--font-mono); color:var(--accent);" id="confirm-tool-title"></div>
+        <div class="confirm-details-box" id="confirm-tool-details"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-send btn-danger" onclick="resolveConfirmation(false)" style="padding:6px 14px;">
+          Denegar / Cancelar
+        </button>
+        <button class="btn-send" onclick="resolveConfirmation(true)" style="padding:6px 16px;">
+          Permitir Ejecución
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Selección de Interfaz / Ajustes -->
+  <div class="modal-overlay" id="settings-modal" onclick="closeSettings(event)">
+    <div class="modal-window" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span>Estilo de Interfaz</span>
+        </div>
+        <button class="btn-close" onclick="closeSettings()" title="Cerrar">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="section-title">Selecciona el diseño general</div>
+        <div class="themes-grid">
+          <!-- 1. Minimalista OpenCode -->
+          <div class="theme-card" data-theme-name="opencode" onclick="applyTheme('opencode')">
+            <div class="theme-card-top">
+              <span class="theme-card-title">⚡ OpenCode</span>
+              <div class="theme-card-preview">
+                <div class="preview-dot" style="background:#09090b;"></div>
+                <div class="preview-dot" style="background:#27272a;"></div>
+                <div class="preview-dot" style="background:#ffffff;"></div>
+              </div>
+            </div>
+            <p class="theme-card-desc">Estilo flat moderno, oscuro, sobrio e inspirado en Cursor / VS Code.</p>
+          </div>
+
+          <!-- 2. Tipo Claude -->
+          <div class="theme-card" data-theme-name="claude" onclick="applyTheme('claude')">
+            <div class="theme-card-top">
+              <span class="theme-card-title">🧡 Tipo Claude</span>
+              <div class="theme-card-preview">
+                <div class="preview-dot" style="background:#1e1b18;"></div>
+                <div class="preview-dot" style="background:#d97757;"></div>
+                <div class="preview-dot" style="background:#ede4dc;"></div>
+              </div>
+            </div>
+            <p class="theme-card-desc">Minimalismo cálido, tonos terracota y lectura reposada.</p>
+          </div>
+
+          <!-- 3. Terminal Hacking -->
+          <div class="theme-card" data-theme-name="terminal" onclick="applyTheme('terminal')">
+            <div class="theme-card-top">
+              <span class="theme-card-title">📟 Terminal Hacker</span>
+              <div class="theme-card-preview">
+                <div class="preview-dot" style="background:#040804;"></div>
+                <div class="preview-dot" style="background:#00ff66;"></div>
+                <div class="preview-dot" style="background:#166534;"></div>
+              </div>
+            </div>
+            <p class="theme-card-desc">Cyber Matrix con fósforo verde, fuente monoespaciada y glow.</p>
+          </div>
+
+          <!-- 4. Retro 90 -->
+          <div class="theme-card" data-theme-name="retro90" onclick="applyTheme('retro90')">
+            <div class="theme-card-top">
+              <span class="theme-card-title">💾 Retro 90</span>
+              <div class="theme-card-preview">
+                <div class="preview-dot" style="background:#008080;"></div>
+                <div class="preview-dot" style="background:#c0c0c0;"></div>
+                <div class="preview-dot" style="background:#000080;"></div>
+              </div>
+            </div>
+            <p class="theme-card-desc">Auténtico Windows 95 con botones biselados y fondo azul verdoso.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-send" onclick="closeSettings()" style="padding:6px 16px;">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const history = [];
+    const chatContainer = document.getElementById('chat-messages');
+    const input = document.getElementById('prompt-input');
+    const sendBtn = document.getElementById('send-btn');
+    const statusText = document.getElementById('status-text');
+    const statusDot = document.getElementById('status-dot');
+    const tpsCounter = document.getElementById('tps-counter');
+    const hostInput = document.getElementById('host-url');
+    const modelSelect = document.getElementById('model-select');
+    const safeModeToggle = document.getElementById('safe-mode-toggle');
+    const settingsModal = document.getElementById('settings-modal');
+    const confirmModal = document.getElementById('confirm-modal');
+    const confirmToolTitle = document.getElementById('confirm-tool-title');
+    const confirmToolDetails = document.getElementById('confirm-tool-details');
+
+    let activeAiRowId = null;
+    let pendingConfirmId = null;
+
+    function normalizeHostUrl(raw) {
+      let h = (raw || '').trim().replace(/\/+$/, '');
+      if (!h) return 'http://localhost:11434';
+      if (!h.startsWith('http://') && !h.startsWith('https://')) {
+        h = 'http://' + h;
+      }
+      try {
+        const u = new URL(h);
+        if (!u.port) {
+          u.port = '11434';
+        }
+        return u.origin;
+      } catch (_) {
+        return h;
+      }
+    }
+
+    async function persistSettings() {
+      const host = normalizeHostUrl(hostInput.value);
+      hostInput.value = host;
+      const model = modelSelect.value;
+      const theme = document.documentElement.getAttribute('data-theme') || 'opencode';
+      const safeMode = safeModeToggle.checked;
+
+      localStorage.setItem('localai_host', host);
+      localStorage.setItem('localai_model', model);
+      localStorage.setItem('localai_interface_theme', theme);
+      localStorage.setItem('localai_safe_mode', safeMode ? 'true' : 'false');
+
+      if (window.__TAURI__ && window.__TAURI__.core) {
+        try {
+          await window.__TAURI__.core.invoke('save_local_config', {
+            config: {
+              host,
+              model,
+              theme,
+              safe_mode: safeMode
+            }
+          });
+        } catch (_) {}
+      }
+    }
+
+    // Inicialización, persistencia local y suscripción a eventos Tauri
+    window.addEventListener('DOMContentLoaded', async () => {
+      let savedTheme = localStorage.getItem('localai_interface_theme') || localStorage.getItem('qwen_interface_theme');
+      let savedHost = localStorage.getItem('localai_host') || localStorage.getItem('qwen_host');
+      let savedModel = localStorage.getItem('localai_model') || localStorage.getItem('qwen_model');
+      let savedSafeMode = localStorage.getItem('localai_safe_mode') !== null
+        ? localStorage.getItem('localai_safe_mode')
+        : localStorage.getItem('qwen_safe_mode');
+
+      // Cargar desde config.json local si existe en entorno Tauri
+      if (window.__TAURI__ && window.__TAURI__.core) {
+        try {
+          const fileCfg = await window.__TAURI__.core.invoke('load_local_config');
+          if (fileCfg && fileCfg.host) savedHost = fileCfg.host;
+          if (!savedModel && fileCfg && fileCfg.model) savedModel = fileCfg.model;
+          if (!savedTheme && fileCfg && fileCfg.theme) savedTheme = fileCfg.theme;
+          if (savedSafeMode === null && fileCfg && typeof fileCfg.safe_mode === 'boolean') {
+            savedSafeMode = fileCfg.safe_mode ? 'true' : 'false';
+          }
+        } catch (_) {}
+      }
+
+      applyTheme(savedTheme || 'opencode', false);
+      if (savedHost) {
+        hostInput.value = normalizeHostUrl(savedHost);
+      } else {
+        hostInput.value = 'http://localhost:11434';
+      }
+      if (savedModel) modelSelect.value = savedModel;
+      if (savedSafeMode !== null) {
+        safeModeToggle.checked = savedSafeMode === 'true';
+      } else {
+        safeModeToggle.checked = true;
+      }
+
+      // Escuchar eventos en tiempo real del bucle ReAct
+      if (window.__TAURI__ && window.__TAURI__.event) {
+        await window.__TAURI__.event.listen('agent-step', (event) => {
+          renderAgentStep(event.payload);
+        });
+
+        await window.__TAURI__.event.listen('agent-confirm-request', (event) => {
+          showConfirmDialog(event.payload);
+        });
+      }
+    });
+
+    hostInput.addEventListener('input', () => {
+      localStorage.setItem('localai_host', hostInput.value.trim());
+    });
+
+    hostInput.addEventListener('blur', () => {
+      if (hostInput.value.trim()) {
+        hostInput.value = normalizeHostUrl(hostInput.value);
+        persistSettings();
+      }
+    });
+
+    hostInput.addEventListener('change', () => {
+      persistSettings();
+    });
+
+    modelSelect.addEventListener('change', () => {
+      persistSettings();
+    });
+
+    safeModeToggle.addEventListener('change', () => {
+      persistSettings();
+    });
+
+    // Control de temas
+    function applyTheme(themeName, save = true) {
+      document.documentElement.setAttribute('data-theme', themeName);
+      document.querySelectorAll('.theme-card').forEach(card => {
+        if (card.getAttribute('data-theme-name') === themeName) {
+          card.classList.add('active');
+        } else {
+          card.classList.remove('active');
+        }
+      });
+      if (save) {
+        persistSettings();
+      }
+    }
+
+    // Modal de ajustes
+    function openSettings() {
+      settingsModal.classList.add('active');
+    }
+
+    function closeSettings(e) {
+      if (!e || e.target === settingsModal || e.type === 'click') {
+        settingsModal.classList.remove('active');
+      }
+    }
+
+    // Diálogo de confirmación para Modo Seguro
+    function showConfirmDialog(payload) {
+      pendingConfirmId = payload.id;
+      confirmToolTitle.innerText = payload.command_preview || payload.tool;
+      confirmToolDetails.innerText = payload.details || '';
+      confirmModal.classList.add('active');
+      statusText.innerText = `Esperando confirmación para ${payload.tool}...`;
+    }
+
+    async function resolveConfirmation(approved) {
+      if (!pendingConfirmId) return;
+      const id = pendingConfirmId;
+      pendingConfirmId = null;
+      confirmModal.classList.remove('active');
+
+      if (window.__TAURI__ && window.__TAURI__.core) {
+        try {
+          await window.__TAURI__.core.invoke('confirm_tool_execution', {
+            id,
+            approved
+          });
+        } catch (err) {
+          console.error('Error enviando confirmación:', err);
+        }
+      }
+    }
+
+    // Renderizado en vivo en el monitor CRT de cada paso de herramienta
+    function renderAgentStep(stepPayload) {
+      if (!activeAiRowId) return;
+      const aiRow = document.getElementById(activeAiRowId);
+      if (!aiRow) return;
+
+      let logBox = aiRow.querySelector('.crt-agent-log');
+      if (!logBox) {
+        const card = aiRow.querySelector('.message-card');
+        if (!card) return;
+        logBox = document.createElement('div');
+        logBox.className = 'crt-agent-log';
+        logBox.innerHTML = `
+          <div class="crt-log-header">
+            <span>CRT // REACT AGENT TELEMETRY</span>
+            <span class="crt-step-count">ACTIVO</span>
+          </div>
+          <div class="crt-log-entries"></div>
+        `;
+        card.prepend(logBox);
+      }
+
+      const entriesContainer = logBox.querySelector('.crt-log-entries');
+      const stepId = `${activeAiRowId}-step-${stepPayload.step}`;
+      let stepEl = document.getElementById(stepId);
+
+      const isAmber = ['[EXEC]', '[WRITE]', '[EDIT]', '[WARN]'].includes(stepPayload.tag);
+      const isDenied = stepPayload.tag === '[DENIED]';
+      const tagClass = isDenied ? 'crt-tag-denied' : (isAmber ? 'crt-tag-amber' : 'crt-tag-cyan');
+      const cmdClass = isAmber ? 'crt-cmd-text' : 'crt-cmd-cyan';
+
+      const previewHtml = stepPayload.preview
+        ? `<div class="crt-step-preview">↳ ${escapeHtml(stepPayload.preview)}</div>`
+        : '';
+
+      const innerHtml = `
+        <div class="crt-step-main">
+          <span class="${tagClass}">${escapeHtml(stepPayload.tag)}</span>
+          <span class="${cmdClass}">${escapeHtml(stepPayload.display)}</span>
+        </div>
+        ${previewHtml}
+      `;
+
+      if (!stepEl) {
+        stepEl = document.createElement('div');
+        stepEl.id = stepId;
+        stepEl.className = 'crt-step-item';
+        stepEl.innerHTML = innerHtml;
+        entriesContainer.appendChild(stepEl);
+      } else {
+        stepEl.innerHTML = innerHtml;
+      }
+
+      statusText.innerText = `${stepPayload.tag} ${stepPayload.tool} (Paso ${stepPayload.step}/10)`;
+      requestAnimationFrame(() => {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      });
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && settingsModal.classList.contains('active')) {
+        closeSettings();
+      }
+    });
+
+    // Entrada y redimensionamiento
+    input.addEventListener('input', () => {
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 130) + 'px';
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    function getTimeString() {
+      const now = new Date();
+      return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function copyCode(btn, codeText) {
+      navigator.clipboard.writeText(decodeURIComponent(codeText)).then(() => {
+        const orig = btn.innerText;
+        btn.innerText = "✓ Copiado";
+        setTimeout(() => { btn.innerText = orig; }, 1600);
+      });
+    }
+
+    function formatMessageContent(text) {
+      let escaped = escapeHtml(text);
+
+      // Bloques de código
+      escaped = escaped.replace(/```([a-zA-Z0-9_\-\.]*)\n?([\s\S]*?)```/g, (_, lang, code) => {
+        const language = lang.trim() || 'código';
+        const cleanCode = code.trim();
+        const encoded = encodeURIComponent(cleanCode);
+        return `
+          <div class="code-block">
+            <div class="code-header">
+              <span>${language}</span>
+              <button class="code-copy-btn" onclick="copyCode(this, '${encoded}')">Copiar</button>
+            </div>
+            <pre><code>${cleanCode}</code></pre>
+          </div>
+        `;
+      });
+
+      // Código en línea
+      escaped = escaped.replace(/`([^`\n]+)`/g, '<code class="inline-code">$1</code>');
+
+      // Negritas
+      escaped = escaped.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+      return `<div class="message-text">${escaped}</div>`;
+    }
+
+    async function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      const host = normalizeHostUrl(hostInput.value);
+      hostInput.value = host;
+      const model = modelSelect.value;
+      const safeMode = safeModeToggle.checked;
+      const timeStr = getTimeString();
+
+      await persistSettings();
+
+      input.value = '';
+      input.style.height = 'auto';
+
+      // Mensaje del usuario
+      const userHtml = `
+        <div class="message-row user-row">
+          <div class="user-header">
+            <span class="message-time">${timeStr}</span>
+            <span class="user-tag">Tú</span>
+          </div>
+          <div class="message-card">
+            ${formatMessageContent(text)}
+          </div>
+        </div>
+      `;
+      chatContainer.insertAdjacentHTML('beforeend', userHtml);
+
+      // Bocadillo de la IA con soporte para monitor CRT de pasos ReAct
+      const aiRowId = 'ai-msg-' + Date.now();
+      activeAiRowId = aiRowId;
+      const aiHtml = `
+        <div class="message-row ai-row" id="${aiRowId}">
+          <div class="message-card">
+            <div class="ai-reply-body">
+              <div class="typing-indicator" id="${aiRowId}-loader">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      chatContainer.insertAdjacentHTML('beforeend', aiHtml);
+      requestAnimationFrame(() => {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      });
+
+      history.push({ role: 'user', content: text });
+      statusText.innerText = 'Ejecutando bucle de agente ReAct...';
+      sendBtn.disabled = true;
+
+      try {
+        let replyText = '';
+        let tps = 0;
+
+        if (window.__TAURI__) {
+          const res = await window.__TAURI__.core.invoke('chat_ollama', {
+            host,
+            model,
+            messages: history,
+            safeMode
+          });
+          replyText = res.reply;
+          tps = res.tps;
+        } else {
+          const res = await fetch(`${host}/api/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ model, messages: history, stream: false })
+          });
+          const data = await res.json();
+          replyText = data.message.content;
+          tps = data.eval_duration ? (data.eval_count / (data.eval_duration / 1e9)) : 0;
+        }
+
+        history.push({ role: 'assistant', content: replyText });
+
+        const aiMsgElement = document.getElementById(aiRowId);
+        if (aiMsgElement) {
+          const logHeaderStatus = aiMsgElement.querySelector('.crt-step-count');
+          if (logHeaderStatus) {
+            logHeaderStatus.innerText = 'COMPLETADO';
+          }
+          const replyBody = aiMsgElement.querySelector('.ai-reply-body');
+          if (replyBody) {
+            replyBody.innerHTML = formatMessageContent(replyText);
+          } else {
+            const card = aiMsgElement.querySelector('.message-card');
+            card.innerHTML = formatMessageContent(replyText);
+          }
+        }
+
+        statusText.innerText = 'Listo para enviar';
+        tpsCounter.innerText = `${tps.toFixed(1)} t/s`;
+      } catch (err) {
+        const aiMsgElement = document.getElementById(aiRowId);
+        if (aiMsgElement) {
+          const replyBody = aiMsgElement.querySelector('.ai-reply-body') || aiMsgElement.querySelector('.message-card');
+          if (replyBody) {
+            replyBody.innerHTML = `
+              <div class="error-card">
+                <strong>Error:</strong> ${escapeHtml(String(err))}
+              </div>
+            `;
+          }
+        }
+        statusText.innerText = 'Error de conexión';
+      } finally {
+        activeAiRowId = null;
+        sendBtn.disabled = false;
+        requestAnimationFrame(() => {
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        });
+        input.focus();
+      }
+    }
+  </script>
+</body>
+</html>
