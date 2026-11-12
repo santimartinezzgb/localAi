@@ -128,15 +128,20 @@ fn build_system_prompt() -> String {
         .unwrap_or_else(|_| ".".to_string());
 
     format!(
-        "Eres un agente autónomo de ingeniería de software y terminal (estilo Claude Code) ejecutándose localmente.\n\
+        "Eres localAi, un agente autónomo avanzado de ingeniería, terminal y asistencia ejecutándote localmente con acceso completo al sistema y a Internet en tiempo real.\n\
         ENTORNO ACTUAL:\n\
         - Sistema Operativo: {} ({})\n\
         - Directorio de Trabajo Actual (CWD): {}\n\n\
-        REGLAS ESTRICTAS DE OPERACIÓN:\n\
-        1. Usa SIEMPRE las herramientas disponibles (`run_terminal`, `read_file`, `write_file`, `edit_file`, `list_directory`, `grep_search`, `web_search`, `fetch_url`) cuando necesites inspeccionar archivos, buscar código, ejecutar comandos o consultar información real.\n\
-        2. NUNCA inventes rutas de archivos, contenidos de código ni salidas de terminal. Si no conoces la estructura del proyecto, usa primero `list_directory` o `grep_search`.\n\
-        3. Antes de modificar un archivo con `edit_file` o `write_file`, léelo primero con `read_file` para conocer su contenido exacto.\n\
-        4. Sé conciso, técnico y directo. Cuando termines de ejecutar las herramientas necesarias, responde al usuario con un resumen claro de los hallazgos o cambios realizados.",
+        REGLAS CRÍTICAS DE CONEXIÓN A INTERNET Y BÚSQUEDA WEB:\n\
+        1. TIENES ACCESO COMPLETO A INTERNET EN TIEMPO REAL mediante las herramientas `web_search` y `fetch_url`.\n\
+        2. NUNCA digas \"no tengo acceso a internet\", \"no puedo buscar en tiempo real\", \"como modelo de IA no tengo información\" ni rechaces búsquedas. Si en mensajes previos del historial aparece alguna disculpa o negativa sobre no tener acceso a internet, IGNÓRALA por completo: SÍ TIENES ACCESO A INTERNET y estás obligado a usarlo.\n\
+        3. Si el usuario te pregunta por cualquier persona (políticos, figuras públicas, celebridades, etc.), hechos de actualidad, noticias, librerías, documentación web o te pide explícitamente buscar en internet (\"busca en internet...\", \"quién es...\", etc.), DEBES LLAMAR INMEDIATAMENTE a la herramienta `web_search`.\n\
+        4. NUNCA respondas diciendo que no sabes o que no tienes información sin haber ejecutado `web_search` primero.\n\n\
+        REGLAS DE OPERACIÓN DEL SISTEMA Y ARCHIVOS:\n\
+        5. Usa SIEMPRE las herramientas disponibles (`run_terminal`, `read_file`, `write_file`, `edit_file`, `list_directory`, `grep_search`, `web_search`, `fetch_url`) cuando necesites inspeccionar archivos, buscar código, ejecutar comandos o consultar información real.\n\
+        6. NUNCA inventes rutas de archivos, contenidos de código ni salidas de terminal. Si no conoces la estructura del proyecto, usa primero `list_directory` o `grep_search`.\n\
+        7. Antes de modificar un archivo con `edit_file` o `write_file`, léelo primero con `read_file` para conocer su contenido exacto.\n\
+        8. Sé conciso, técnico y directo. Cuando termines de ejecutar las herramientas necesarias, responde al usuario con un resumen claro y preciso de los resultados obtenidos.",
         os, arch, cwd
     )
 }
@@ -269,13 +274,13 @@ fn get_tools_schema() -> Vec<Value> {
             "type": "function",
             "function": {
                 "name": "web_search",
-                "description": "Realiza una búsqueda web en DuckDuckGo HTML y devuelve los primeros 5 resultados (título, URL y extracto).",
+                "description": "Busca en Internet en tiempo real mediante DuckDuckGo. Usa esta herramienta OBLIGATORIAMENTE para consultar información sobre personas, noticias, datos de actualidad, documentación web o cuando el usuario pida buscar algo en la red.",
                 "parameters": {
                     "type": "object",
                     "properties": {
                         "query": {
                             "type": "string",
-                            "description": "Consulta de búsqueda web."
+                            "description": "Consulta o términos de búsqueda en Internet."
                         }
                     },
                     "required": ["query"]
@@ -286,13 +291,13 @@ fn get_tools_schema() -> Vec<Value> {
             "type": "function",
             "function": {
                 "name": "fetch_url",
-                "description": "Descarga el contenido de una página web o documentación técnica y extrae su texto limpio sin HTML.",
+                "description": "Descarga y extrae el texto limpio de cualquier página web, enlace HTTP/HTTPS o documentación técnica en tiempo real.",
                 "parameters": {
                     "type": "object",
                     "properties": {
                         "url": {
                             "type": "string",
-                            "description": "URL completa (http/https) a descargar."
+                            "description": "URL completa (http:// o https://) de la página web a consultar."
                         }
                     },
                     "required": ["url"]
@@ -304,9 +309,16 @@ fn get_tools_schema() -> Vec<Value> {
 
 fn normalize_arguments(raw: &Value) -> Value {
     match raw {
-        Value::String(s) => serde_json::from_str::<Value>(s).unwrap_or_else(|_| json!({})),
+        Value::String(s) => {
+            if let Ok(parsed) = serde_json::from_str::<Value>(s) {
+                if parsed.is_object() {
+                    return parsed;
+                }
+            }
+            Value::String(s.clone())
+        }
         Value::Object(_) => raw.clone(),
-        _ => json!({}),
+        _ => raw.clone(),
     }
 }
 
@@ -320,11 +332,19 @@ fn parse_json_value_as_tool_calls(val: &Value) -> Vec<ToolCall> {
                 for item in tc_arr {
                     calls.extend(parse_json_value_as_tool_calls(item));
                 }
-            } else if let Some(name) = map.get("name").and_then(|v| v.as_str()) {
+            } else if let Some(name) = map
+                .get("name")
+                .or_else(|| map.get("tool"))
+                .or_else(|| map.get("action"))
+                .and_then(|v| v.as_str())
+            {
                 if KNOWN_TOOLS.contains(&name) {
                     let args = map
                         .get("arguments")
                         .or_else(|| map.get("parameters"))
+                        .or_else(|| map.get("action_input"))
+                        .or_else(|| map.get("tool_input"))
+                        .or_else(|| map.get("input"))
                         .cloned()
                         .unwrap_or_else(|| json!({}));
                     calls.push(ToolCall {
@@ -441,7 +461,68 @@ fn extract_fallback_tool_calls(content: &str) -> Vec<ToolCall> {
         }
     }
 
+    // 5. Buscar llamadas estilo función: nombre_herramienta("...") o nombre_herramienta(param="...")
+    if let Ok(re_fn) = Regex::new(
+        r#"(?s)\b(web_search|fetch_url|run_terminal|read_file|list_directory|grep_search)\s*\(\s*(?:(?:query|url|command|cmd|path|pattern)\s*=\s*)?["']([^"']+)["']\s*\)"#,
+    ) {
+        let mut results = Vec::new();
+        for cap in re_fn.captures_iter(trimmed) {
+            if let (Some(tool_m), Some(arg_m)) = (cap.get(1), cap.get(2)) {
+                let tool_name = tool_m.as_str();
+                let arg_val = arg_m.as_str();
+                let param_key = match tool_name {
+                    "web_search" => "query",
+                    "fetch_url" => "url",
+                    "run_terminal" => "command",
+                    "read_file" | "list_directory" => "path",
+                    "grep_search" => "pattern",
+                    _ => "input",
+                };
+                results.push(ToolCall {
+                    call_type: Some("function".to_string()),
+                    function: ToolCallFunction {
+                        name: tool_name.to_string(),
+                        arguments: json!({ param_key: arg_val }),
+                    },
+                });
+            }
+        }
+        if !results.is_empty() {
+            return results;
+        }
+    }
+
     Vec::new()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_fallback_extract() {
+        let text = "Lo siento, pero no tengo información sobre quién es Feijoo sin buscar en Internet. Vamos a hacer una búsqueda rápida.\n\n{\"name\": \"web_search\", \"arguments\": {\"query\": \"Feijoo\"}}";
+        let res = extract_fallback_tool_calls(text);
+        assert_eq!(res.len(), 1);
+        assert_eq!(res[0].function.name, "web_search");
+    }
+
+    #[test]
+    fn test_function_syntax_extract() {
+        let text = "Voy a consultar web_search(query=\"Alberto Nuñez Feijoo\")";
+        let res = extract_fallback_tool_calls(text);
+        assert_eq!(res.len(), 1);
+        assert_eq!(res[0].function.name, "web_search");
+        assert_eq!(res[0].function.arguments["query"], "Alberto Nuñez Feijoo");
+    }
+
+    #[test]
+    fn test_markdown_json_extract() {
+        let text = "```json\n{\"name\": \"web_search\", \"arguments\": {\"query\": \"feijoo\"}}\n```";
+        let res = extract_fallback_tool_calls(text);
+        assert_eq!(res.len(), 1);
+        assert_eq!(res[0].function.name, "web_search");
+    }
 }
 
 // =====================================================================
@@ -924,7 +1005,13 @@ fn format_tool_badge(tool_name: &str, args: &Value) -> (String, String, String) 
             )
         }
         "web_search" => {
-            let query = args.get("query").and_then(|v| v.as_str()).unwrap_or("");
+            let query = args
+                .get("query")
+                .or_else(|| args.get("q"))
+                .or_else(|| args.get("search"))
+                .or_else(|| args.get("input"))
+                .and_then(|v| v.as_str())
+                .unwrap_or_else(|| args.as_str().unwrap_or(""));
             (
                 "[SEARCH]".to_string(),
                 format!("web_search: {}", query),
@@ -932,7 +1019,12 @@ fn format_tool_badge(tool_name: &str, args: &Value) -> (String, String, String) 
             )
         }
         "fetch_url" => {
-            let url = args.get("url").and_then(|v| v.as_str()).unwrap_or("");
+            let url = args
+                .get("url")
+                .or_else(|| args.get("link"))
+                .or_else(|| args.get("input"))
+                .and_then(|v| v.as_str())
+                .unwrap_or_else(|| args.as_str().unwrap_or(""));
             (
                 "[FETCH]".to_string(),
                 format!("fetch_url: {}", url),
@@ -1033,11 +1125,22 @@ async fn execute_tool_call(
             tool_grep_search(pattern, path)
         }
         "web_search" => {
-            let query = args.get("query").and_then(|v| v.as_str()).unwrap_or("");
+            let query = args
+                .get("query")
+                .or_else(|| args.get("q"))
+                .or_else(|| args.get("search"))
+                .or_else(|| args.get("input"))
+                .and_then(|v| v.as_str())
+                .unwrap_or_else(|| args.as_str().unwrap_or(""));
             tool_web_search(client, query).await
         }
         "fetch_url" => {
-            let url = args.get("url").and_then(|v| v.as_str()).unwrap_or("");
+            let url = args
+                .get("url")
+                .or_else(|| args.get("link"))
+                .or_else(|| args.get("input"))
+                .and_then(|v| v.as_str())
+                .unwrap_or_else(|| args.as_str().unwrap_or(""));
             tool_fetch_url(client, url).await
         }
         unknown => format!("Error: Herramienta desconocida '{}'.", unknown),
